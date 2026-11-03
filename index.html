@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Império: Reis de Porto Vesper — Protótipo</title>
+    <title>Véspera: Cidade de Sangue</title>
     <style>
       html, body { margin: 0; height: 100%; overflow: hidden; background: #9cc9ef; font-family: system-ui, sans-serif; }
       canvas { display: block; }
@@ -44,6 +44,47 @@
         #stats { bottom: 12px; right: 8px; font-size: 18px; }
         #minimap { bottom: 8px; left: 8px; width: 130px; height: 130px; }
       }
+
+#start { display:block; overflow-y:auto; padding:0; cursor:default; text-align:left; isolation:isolate;
+ background: radial-gradient(ellipse at 76% 33%, #ad7160 0%,#5c3940 18%,#293440 43%,#0b151d 75%); }
+#start::before { content:""; position:absolute; z-index:-1; inset:0; pointer-events:none;
+ background: linear-gradient(90deg,#061017fc 0%,#08131af0 38%,#101b2760 88%),linear-gradient(0deg,#061017dd,transparent 64%); }
+#start::after { content:""; position:absolute; z-index:-2; inset:46% 0 0; pointer-events:none;opacity:.75;
+ background: repeating-linear-gradient(90deg,transparent 0 20px,#13202a 20px 57px,transparent 57px 77px);
+ clip-path:polygon(0 29%,7% 29%,7% 15%,12% 15%,12% 35%,17% 35%,17% 8%,23% 8%,23% 24%,28% 24%,28% 5%,34% 5%,34% 30%,43% 30%,43% 13%,49% 13%,49% 26%,55% 26%,55% 4%,60% 4%,60% 34%,67% 34%,67% 16%,74% 16%,74% 27%,80% 27%,80% 12%,87% 12%,87% 33%,93% 33%,93% 24%,100% 24%,100% 100%,0 100%); }
+.menu-layout { min-height:100%; display:flex; flex-direction:column; padding:clamp(24px,5vh,62px) clamp(24px,7vw,96px) 22px; }
+.menu-topline { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; color:#d9be95; font-size:11px; letter-spacing:.2em; text-transform:uppercase; font-weight:700; }
+.menu-topline span:first-child { border-left:2px solid #d9ae73; padding-left:12px; }
+.menu-content { flex:1; display:flex; flex-direction:column; justify-content:center; max-width:650px; padding:28px 0 48px; }
+.menu-eyebrow { font-size:12px; letter-spacing:.25em; color:#d5ab73; font-weight:800; text-transform:uppercase; }
+#start h1.menu-title { font:700 clamp(62px,9.4vw,144px)/.87 Georgia,serif; letter-spacing:-.066em; color:#fff0dc; text-shadow:0 10px 24px #0009; margin:21px 0 8px; }
+.menu-subtitle { font:800 clamp(12px,1.4vw,18px) system-ui; color:#edbc79; text-transform:uppercase; letter-spacing:.37em; margin-bottom:20px; }
+#start p.menu-description { max-width:470px; font:400 15px/1.7 system-ui; color:#b9c0c1; margin:0 0 24px; }
+.menu-actions { display:flex; flex-direction:column; gap:10px; width:min(340px,100%); }
+.menu-action { width:100%; text-align:left; padding:14px 18px; background:#1c2c32c9; border:1px solid #ffffff3b; color:#f6ecdf; font-size:12px; text-transform:uppercase; letter-spacing:.15em; font-weight:800; transition:transform .15s,background .15s; }
+.menu-action:hover:not(:disabled) { transform:translateX(4px); background:#394c50; border-color:#e7bf7b; }
+.menu-action.primary { background:#d5ad76; color:#101c22; border-color:#eac995; }
+.menu-action.primary:hover:not(:disabled) { background:#efd0a0; }
+.menu-action:disabled { opacity:.4; cursor:not-allowed; }
+.menu-buttons-secondary { display:flex; gap:9px; }
+.menu-buttons-secondary .menu-action { flex:1; }
+.menu-loading { margin-top:22px; min-height:65px; width:min(340px,100%); font-size:12px; color:#dfcaa4; }
+.menu-progress { margin:9px 0; height:4px; background:#ffffff30; overflow:hidden; border-radius:5px; }
+#load-bar { height:100%; width:3%; background:linear-gradient(90deg,#a96844,#f3c48a); transition:width .2s ease-out; }
+.menu-footer { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; font-size:11px; opacity:.7; letter-spacing:.045em; }
+.main-overlay { position:absolute; inset:0; z-index:26; display:grid; place-items:center; padding:16px; background:#071019ea; }
+.main-dialog { width:min(470px,100%); padding:26px; background:#142228; border:1px solid #bc9262; box-shadow:0 18px 80px #000a; border-radius:8px; }
+.main-dialog h2 { margin:0 0 8px; font:700 30px Georgia,serif; }
+#start .main-dialog p { font:400 13px/1.65 system-ui; margin:10px 0; color:#bcc4c1; }
+.menu-field { display:grid; gap:7px; margin:19px 0; font-size:14px; }
+.menu-field select { background:#24373c; border:1px solid #97856e; color:white; padding:11px; border-radius:4px; }
+.dialog-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:9px; margin-top:20px; }
+.dialog-actions button { padding:11px 15px; background:#31474c; border:1px solid #bb9565; border-radius:4px; color:white; cursor:pointer; }
+.dialog-actions .primary { background:#d3ab76; color:#0b1418; font-weight:800; }
+button:focus-visible,select:focus-visible { outline:3px solid #f4cb92; outline-offset:3px; }
+@media(max-width:760px) { .menu-layout { padding:24px; } #start h1.menu-title { font-size:clamp(60px,16vw,105px); } }
+@media(prefers-reduced-motion:reduce) { .menu-action,#load-bar { transition:none !important; } }
+
     </style>
   </head>
   <body>
@@ -52,23 +93,52 @@
     <div id="prompt"></div>
     <div id="toast"></div>
     <canvas id="minimap" width="180" height="180"></canvas>
-    <div id="mission-box"><div id="account">PORTO VESPER · 1988</div><div id="mission-objective">Preparando missão…</div></div>
+    <div id="mission-box"><div id="account">VÉSPERA · PORTO VESPER · 1988</div><div id="mission-objective">Preparando missão…</div></div>
     <div id="pause-menu" class="menu-panel" hidden>
       <h2>Jogo pausado</h2><p>O mundo está congelado até você continuar.</p>
-      <button id="resume-game">Continuar (P)</button><button id="save-game">Salvar partida</button>
+      <button id="resume-game">Continuar (P)</button><button id="save-game">Salvar partida</button><button id="back-to-menu">Menu principal</button>
     </div>
     <div id="empire-panel" class="menu-panel" hidden>
       <h2>Meu império</h2><p id="empire-summary"></p>
       <button id="upgrade-workshop">Reformar a oficina</button><button id="close-empire">Voltar ao jogo (I)</button>
     </div>
+
     <div id="start">
-      <h1>IMPÉRIO: REIS DE PORTO VESPER</h1>
-      <p id="start-text">Carregando gráficos…</p>
-      <p style="opacity: .7">WASD andar · Mouse câmera · E interagir · F veículos · I império · P pausar</p>
-      <p style="opacity: .7">Primeiro bairro: Santa Ângela · Oficina Valença e Bar Atlântico com interiores acessíveis</p>
-      <p style="opacity: .7">G qualidade gráfica · H alterna dia, pôr do sol e noite · K salva o progresso</p>
-      <p style="opacity: .65; font-size: 12px; margin-top: 18px">Protótipo do Ato I · Apenas as duas primeiras missões estão disponíveis.</p>
-      <p style="opacity: .45; font-size: 12px; margin-top: 10px">Modelos: Quaternius (CC0) · Aviões por Poly by Google, Miha Lunar e jeremy (CC-BY 3.0) · Texturas e céus: Poly Haven e ambientCG (CC0)</p>
+      <div class="menu-layout">
+        <header class="menu-topline"><span>Porto Vesper — 1988</span><span>Um drama criminal original</span></header>
+        <section class="menu-content">
+          <div class="menu-eyebrow">Toda cidade tem um preço</div>
+          <h1 class="menu-title">Véspera</h1>
+          <div class="menu-subtitle">Cidade de Sangue</div>
+          <p class="menu-description">De uma oficina esquecida às ruas que controlam o porto. Construa alianças, escolha seus riscos e conquiste seu lugar em uma cidade que não perdoa.</p>
+          <nav class="menu-actions" aria-label="Ações do jogo">
+            <button id="continue-game" class="menu-action primary" disabled>Continuar partida</button>
+            <button id="new-game" class="menu-action" disabled>Novo jogo</button>
+            <div class="menu-buttons-secondary"><button id="open-options" class="menu-action">Opções</button><button id="open-credits" class="menu-action">Créditos</button></div>
+          </nav>
+          <div class="menu-loading" aria-live="polite">
+            <div id="load-status">Preparando o mundo…</div>
+            <div class="menu-progress" role="progressbar" aria-label="Preparação inicial" aria-valuemin="0" aria-valuemax="100" aria-valuenow="3" id="load-track"><div id="load-bar"></div></div>
+            <span id="start-text">O menu já está disponível enquanto a cidade é preparada.</span>
+          </div>
+        </section>
+        <footer class="menu-footer"><span>Ato I · Protótipo em desenvolvimento</span><span>PC · WASD · Mouse · E interação · F veículos · I império · P pausa</span></footer>
+      </div>
+      <div id="start-options" class="main-overlay" hidden><div class="main-dialog" role="dialog" aria-modal="true" aria-labelledby="options-title">
+        <h2 id="options-title">Opções</h2><p>Personalize a imagem e o consumo de memória de vídeo.</p>
+        <label class="menu-field">Qualidade gráfica<select id="graphics-quality">
+          <option value="0">Baixo — mais leve</option><option value="1">Médio — equilibrado</option><option value="2">Alto — efeitos</option><option value="3">Ultra — máximo</option>
+        </select></label>
+        <label class="menu-field">Detalhe das texturas<select id="texture-quality">
+          <option value="512">Econômico (512 px)</option><option value="1024">Equilibrado (1024 px)</option><option value="2048">Detalhado (2048 px)</option>
+        </select></label>
+        <p>Mudar o detalhe das texturas exige recarregar a página. A redução economiza memória de vídeo; não diminui o tamanho das imagens originais baixadas.</p>
+        <div class="dialog-actions"><button id="options-close">Voltar</button><button id="options-save" class="primary">Aplicar configurações</button></div>
+      </div></div>
+      <div id="start-credits" class="main-overlay" hidden><div class="main-dialog" role="dialog" aria-modal="true" aria-labelledby="credits-title">
+        <h2 id="credits-title">Créditos</h2><p>Véspera: Cidade de Sangue é um jogo original em desenvolvimento. Modelos: Quaternius. Aviões: Poly by Google, Miha Lunar e jeremy. Texturas e céu: Poly Haven e ambientCG. Atribuições completas em CREDITS.md.</p><p>Esta versão apresenta somente o começo do Ato I.</p>
+        <div class="dialog-actions"><button id="credits-close" class="primary">Voltar</button></div>
+      </div></div>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>

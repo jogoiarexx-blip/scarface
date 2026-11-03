@@ -15,12 +15,25 @@ const CLIPS = { idle: /[|_]Idle$/, walk: /[|_]Walk$/, run: /[|_]Run$/, death: /[
 const HEIGHT = 1.75;
 
 const templates = {};
+const inflight = new Map();
+const CORE_PEOPLE = ['casual_man', 'business_man', 'casual_woman', 'worker'];
+function emergencyTemplate() {
+  const scene = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.34, 0.85, 4, 8), new THREE.MeshStandardMaterial({ color: 0x8b918f }));
+  body.position.y = 0.88; scene.add(body);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8), new THREE.MeshStandardMaterial({ color: 0xb28f73 }));
+  head.position.y = 1.62; scene.add(head);
+  const clips = Object.fromEntries(['idle','walk','run','death'].map(name => [name, new THREE.AnimationClip(name, 1, [])]));
+  return { scene, clips, scale: 1 };
+}
 
-export function loadPeople() {
+export function loadPeople(coreOnly = false) {
   const loader = new GLTFLoader(manager);
   return Promise.all(
-    PEOPLE.map((name) =>
-      loader.loadAsync(`assets/people/${name}.glb`).then((gltf) => {
+    (coreOnly ? CORE_PEOPLE : PEOPLE).map((name) => {
+      if (templates[name]) return Promise.resolve();
+      if (inflight.has(name)) return inflight.get(name);
+      const task = loader.loadAsync(`assets/people/${name}.glb`).then((gltf) => {
         const clips = {};
         for (const [key, re] of Object.entries(CLIPS)) clips[key] = gltf.animations.find((c) => re.test(c.name));
         const size = new THREE.Box3().setFromObject(gltf.scene).getSize(new THREE.Vector3());
@@ -30,22 +43,26 @@ export function loadPeople() {
             o.receiveShadow = true;
           }
         });
-        templates[name] = { scene: gltf.scene, clips, scale: HEIGHT / size.y };
-      }),
-    ),
+        templates[name] = { scene: gltf.scene, clips, scale: HEIGHT / Math.max(size.y, 0.01) };
+      }).catch(err => console.warn('Pessoa indisponível:', name, err));
+      inflight.set(name, task);
+      return task;
+    }),
   );
 }
 
 export class Character {
   constructor(name, height = 1) {
-    const t = templates[name];
+    const t = templates[name] || templates[CORE_PEOPLE.find(key => templates[key])] || templates[Object.keys(templates)[0]];
+    const source = t || emergencyTemplate();
+    if (!t) console.warn('Modelos de personagens indisponíveis; exibindo reserva.');
     this.group = new THREE.Group();
-    const model = SkeletonUtils.clone(t.scene);
-    model.scale.setScalar(t.scale * height);
+    const model = SkeletonUtils.clone(source.scene);
+    model.scale.setScalar(source.scale * height);
     this.group.add(model);
     this.mixer = new THREE.AnimationMixer(model);
     this.actions = {};
-    for (const [key, clip] of Object.entries(t.clips)) this.actions[key] = this.mixer.clipAction(clip);
+    for (const [key, clip] of Object.entries(source.clips)) this.actions[key] = this.mixer.clipAction(clip);
     this.actions.death.setLoop(THREE.LoopOnce, 1);
     this.actions.death.clampWhenFinished = true;
     this.current = null;

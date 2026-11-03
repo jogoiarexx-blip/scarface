@@ -11,7 +11,7 @@ import { loadAnimals } from './animals.js';
 import { Effects } from './effects.js';
 import { Hud } from './hud.js';
 import { Graphics } from './graphics.js';
-import { manager } from './assets.js';
+import { manager, textureStats, onTextureProgress, getTextureLimit } from './assets.js';
 import { loadPeople } from './people.js';
 import { isNight } from './nightlight.js';
 import { VesperDistrict } from './vesper.js';
@@ -19,34 +19,80 @@ import { Campaign } from './campaign.js';
 import { resolveCircle } from './collision.js';
 import { DebugOverlay } from './debug.js';
 
-// Tela inicial mostra o progresso; o jogo só começa com tudo carregado
+
+const start = document.getElementById('start');
 const startText = document.getElementById('start-text');
-let ready = false;
-let assetsReady = false;
-let setupReady = false;
-manager.onProgress = (url, loaded, total) => {
-  if (!ready) startText.textContent = `Carregando gráficos… ${Math.round((loaded / total) * 100)}%`;
-};
-manager.onLoad = () => {
-  assetsReady = true;
-  ready = setupReady;
-  startText.textContent = ready ? 'Clique para jogar' : 'Preparando mundo…';
-};
-manager.onError = (url) => {
-  console.warn('Asset indisponível:', url);
-  startText.textContent = 'Alguns recursos falharam; tente recarregar se faltar algum modelo.';
-};
+const loadStatus = document.getElementById('load-status');
+const loadBar = document.getElementById('load-bar');
+const loadTrack = document.getElementById('load-track');
+const continueButton = document.getElementById('continue-game');
+const newButton = document.getElementById('new-game');
+const optionsPanel = document.getElementById('start-options');
+const creditsPanel = document.getElementById('start-credits');
+const qualitySelect = document.getElementById('graphics-quality');
+const textureSelect = document.getElementById('texture-quality');
+let ready = false, playing = false, paused = false, extrasStarted = false;
+let menuStage = 'Preparando terreno e ruas…';
+const pauseMenu = document.getElementById('pause-menu');
+const empirePanel = document.getElementById('empire-panel');
+function refreshProgress() {
+  if (ready) {
+    loadStatus.textContent = 'Pronto para jogar';
+    startText.textContent = textureStats.complete + '/' + textureStats.total + ' texturas processadas; as restantes continuam durante o jogo.';
+  } else {
+    loadStatus.textContent = menuStage;
+    startText.textContent = textureStats.complete + '/' + textureStats.total + ' texturas processadas. A preparação inicial continua.';
+  }
+}
+function progress(value, message) {
+  menuStage = message;
+  loadBar.style.width = value + '%';
+  loadTrack.setAttribute('aria-valuenow', String(value));
+  refreshProgress();
+}
+onTextureProgress(refreshProgress);
+manager.onError = url => console.warn('Recurso indisponível:', url);
+const showPanel = panel => { optionsPanel.hidden = panel !== optionsPanel; creditsPanel.hidden = panel !== creditsPanel; };
+document.getElementById('open-options').addEventListener('click', () => showPanel(optionsPanel));
+document.getElementById('options-close').addEventListener('click', () => showPanel(null));
+document.getElementById('open-credits').addEventListener('click', () => showPanel(creditsPanel));
+document.getElementById('credits-close').addEventListener('click', () => showPanel(null));
+textureSelect.value = String(getTextureLimit());
+let savedGraphics = 1;
+try {
+  const value = Number(localStorage.getItem('vespera-graphics-level'));
+  if (Number.isInteger(value) && value >= 0 && value <= 3) savedGraphics = value;
+} catch { /* modo privado */ }
+qualitySelect.value = String(savedGraphics);
+document.getElementById('options-save').addEventListener('click', () => {
+  const detail = Number(textureSelect.value), oldDetail = getTextureLimit();
+  if (![512,1024,2048].includes(detail)) return;
+  graphics.auto = false;
+  graphics.apply(Number(qualitySelect.value));
+  try {
+    localStorage.setItem('vespera-graphics-level', qualitySelect.value);
+    localStorage.setItem('vespera-texture-limit', String(detail));
+  } catch { /* preferências indisponíveis */ }
+  if (detail !== oldDetail) {
+    loadStatus.textContent = 'Reabrindo com novo detalhe de texturas…';
+    location.reload();
+    return;
+  }
+  showPanel(null);
+});
 
 const graphics = new Graphics();
+graphics.level = savedGraphics;
+graphics.auto = savedGraphics === 1;
 const world = createWorld(graphics.renderer);
 graphics.setup(world.scene, world.camera, world.sun);
 const city = buildCity(world.scene);
 const effects = new Effects(world.scene);
-const [, planes, animals] = await Promise.all([
-  loadPeople(),
-  loadPlanes(world.scene, effects),
-  loadAnimals(world.scene, city.colliders, city.blocks.filter((b) => b.type === 'park')),
-]);
+progress(35, 'Carregando personagens essenciais…');
+await loadPeople(true);
+progress(65, 'Inicializando tráfego e campanha…');
+let planes = [];
+let animals = { update() {} };
 const player = new Player(world.scene, 7.5, 12);
 const traffic = new Traffic(world.scene);
 const peds = new Pedestrians(world.scene);
@@ -55,10 +101,6 @@ const hud = new Hud();
 const vesper = new VesperDistrict(world.scene, city.colliders, city.blocks);
 const campaign = new Campaign(vesper, player, (message, secs) => hud.toast(message, secs));
 const debug = new DebugOverlay(graphics, vesper);
-let playing = false;
-let paused = false;
-const pauseMenu = document.getElementById('pause-menu');
-const empirePanel = document.getElementById('empire-panel');
 function setPaused(next) {
   paused = next;
   pauseMenu.hidden = !next;
@@ -70,9 +112,17 @@ document.getElementById('save-game').addEventListener('click', () => {
   hud.toast(campaign.save(savePosition()) ? 'Jogo salvo neste navegador.' : 'Não foi possível salvar.');
 });
 document.getElementById('close-empire').addEventListener('click', () => campaign.toggleEmpire(false));
-setupReady = true;
-ready = assetsReady;
-if (ready) startText.textContent = 'Clique para jogar';
+document.getElementById('back-to-menu').addEventListener('click', () => {
+  campaign.save(savePosition());
+  playing = false; paused = false; pauseMenu.hidden = true;
+  document.exitPointerLock?.();
+  start.hidden = false; showPanel(null);
+  continueButton.disabled = !campaign.hasSavedGame;
+});
+ready = true;
+continueButton.disabled = !campaign.hasSavedGame;
+newButton.disabled = false;
+progress(100, 'Pronto para jogar');
 
 // Farol de verdade no carro do jogador à noite (os outros carros só têm o facho pintado no chão).
 // Fica sempre na cena com intensidade 0 de dia, para não recompilar os materiais ao ligar.
@@ -173,20 +223,43 @@ function handleCrash() {
   }
 }
 
-// Sem trava do mouse (alguns navegadores bloqueiam) dá para girar a câmera arrastando
+
 const canvasEl = graphics.renderer.domElement;
 const lockMouse = () => Promise.resolve(canvasEl.requestPointerLock?.()).catch(() => {});
-const start = document.getElementById('start');
-start.addEventListener('click', () => {
+function loadExtras() {
+  if (extrasStarted) return;
+  extrasStarted = true;
+  setTimeout(async () => {
+    try { planes = await loadPlanes(world.scene, effects); }
+    catch (error) { console.warn('Aviões indisponíveis', error); }
+    try { await loadPeople(false); }
+    catch (error) { console.warn('Personagens extras indisponíveis', error); }
+    try { animals = await loadAnimals(world.scene, city.colliders, city.blocks.filter(b => b.type === 'park')); }
+    catch (error) { console.warn('Animais indisponíveis', error); }
+    world.warmSky();
+  }, 700);
+}
+function beginGame(newGame) {
   if (!ready) return;
-  start.style.display = 'none';
-  playing = true;
+  if (newGame) {
+    if (campaign.hasSavedGame && !window.confirm('Iniciar novo jogo e substituir o progresso salvo neste navegador?')) return;
+    if (mode === 'car' && car) { car.mode = 'parked'; car = null; }
+    mode = 'foot';
+    player.mesh.visible = true;
+    campaign.reset();
+  }
+  playing = true; paused = false; pauseMenu.hidden = true;
+  showPanel(null); start.hidden = true;
+  continueButton.disabled = false;
+  loadExtras();
   lockMouse();
-});
-canvasEl.addEventListener('click', lockMouse);
+}
+continueButton.addEventListener('click', () => beginGame(false));
+newButton.addEventListener('click', () => beginGame(true));
+canvasEl.addEventListener('click', () => { if (playing && !paused && empirePanel.hidden) lockMouse(); });
 
 // Acesso pelo console do navegador, útil para depurar
-window.game = { world, graphics, city, vesper, campaign, debug, player, traffic, peds, planes, animals, rig, tick, get plane() { return plane; }, get mode() { return mode; }, get car() { return car; } };
+window.game = { world, graphics, city, vesper, campaign, debug, player, traffic, peds, get planes() { return planes; }, get animals() { return animals; }, rig, tick, get plane() { return plane; }, get mode() { return mode; }, get car() { return car; } };
 
 const timer = new THREE.Timer();
 function frame(time) {

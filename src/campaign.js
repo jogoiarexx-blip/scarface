@@ -55,7 +55,7 @@ export class Campaign {
     this.panel = document.getElementById('empire-panel');
     this.summaryEl = document.getElementById('empire-summary');
     document.getElementById('upgrade-workshop').addEventListener('click', () => this.upgradeWorkshop());
-    this.load();
+    this.hasSavedGame = this.load();
     this.render();
   }
 
@@ -76,6 +76,14 @@ export class Campaign {
     return false;
   }
 
+  reset() {
+    this.state = DEFAULT();
+    this.player.place(this.state.player.x, this.state.player.z, this.state.player.heading);
+    this.vesper.setRenovated(false);
+    this.render();
+    this.hasSavedGame = this.save();
+  }
+
   save(position = this.player.pos) {
     const s = this.state;
     s.player = { x: position.x, z: position.z, heading: this.player.heading };
@@ -87,6 +95,7 @@ export class Campaign {
         catch { /* não salvar cópia corrompida */ }
       }
       localStorage.setItem(KEY, JSON.stringify(s));
+      this.hasSavedGame = true;
       return JSON.stringify(JSON.parse(localStorage.getItem(KEY))) === JSON.stringify(s);
     } catch (error) {
       console.warn('Não foi possível salvar progresso:', error);
@@ -200,7 +209,7 @@ export class Campaign {
   render() {
     const s = this.state;
     this.objectiveEl.textContent = OBJECTIVES[s.mission.step];
-    this.accountEl.textContent = `PORTO VESPER · 1988 | $${Math.floor(s.money)} · Influência ${s.influence}`;
+    this.accountEl.textContent = `VÉSPERA · 1988 | ${Math.floor(s.money)} · Influência ${s.influence}`;
     const b = s.business.workshop;
     const cost = b.upgrade === 0 ? '$250' : b.upgrade === 1 ? '$400' : 'Máximo';
     this.summaryEl.textContent = `Ato I · ${s.mission.completed.length}/6 missões | Oficina: ${b.owned ? `sua · nível ${b.upgrade + 1} · receita líquida $${this.workshopProfit()}/ciclo` : 'a recuperar'} | Próxima reforma: ${cost}`;

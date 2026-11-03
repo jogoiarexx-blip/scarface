@@ -102,8 +102,11 @@ export function createWorld(renderer) {
 
   // Chão de grama fotográfica (15 m por repetição) com manchas para não parecer azulejo
   const grassMat = addMacroVariation(polyHavenMaterial('aerial_grass_rock'), 0.08);
-  for (const t of [grassMat.map, grassMat.normalMap, grassMat.aoMap]) t.repeat.set(400, 400);
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(6000, 6000), grassMat);
+  // Repeat UVs on geometry, not on a shared city texture.
+  const groundGeo = new THREE.PlaneGeometry(6000, 6000);
+  const uv = groundGeo.attributes.uv;
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 400, uv.getY(i) * 400);
+  const ground = new THREE.Mesh(groundGeo, grassMat);
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
   scene.add(ground);
@@ -113,7 +116,9 @@ export function createWorld(renderer) {
 
   const hdrLoader = new HDRLoader(manager);
   const loaded = {};
-  let current = null;
+  let current = 'day';
+  let requested = 'day';
+  const loading = new Set();
 
   function applySky(key, tex) {
     const s = SKIES[key];
@@ -141,18 +146,26 @@ export function createWorld(renderer) {
   }
 
   function setSky(key) {
+    requested = key;
     if (loaded[key]) return applySky(key, loaded[key]);
+    if (loading.has(key)) return;
+    loading.add(key);
     hdrLoader.load(SKIES[key].file, (tex) => {
+      loading.delete(key);
       tex.mapping = THREE.EquirectangularReflectionMapping;
       loaded[key] = tex;
-      applySky(key, tex);
+      if (requested === key) applySky(key, tex);
+    }, undefined, (error) => {
+      loading.delete(key);
+      console.warn('Céu HDR indisponível; mantendo céu de reserva', key, error);
     });
   }
-  setSky('day');
+  // HDR pesado não bloqueia o menu.
+  function warmSky() { setSky(requested); }
 
   // Tecla H: dia, pôr do sol e noite
   function toggleSky() {
-    const next = ORDER[(ORDER.indexOf(current) + 1) % ORDER.length];
+    const next = ORDER[(ORDER.indexOf(requested) + 1) % ORDER.length];
     setSky(next);
     return SKIES[next].name;
   }
@@ -167,7 +180,7 @@ export function createWorld(renderer) {
     sun.target.position.copy(snapped);
   }
 
-  return { scene, camera, sun, followSun, toggleSky };
+  return { scene, camera, sun, followSun, toggleSky, warmSky };
 }
 
 function createClouds() {

@@ -1,25 +1,65 @@
 import * as THREE from 'three';
 import { canvas, toTexture } from './textures.js';
 
-// Tudo que vem de public/assets passa por aqui. O DefaultLoadingManager avisa quando terminou,
-// para a tela inicial só liberar o jogo com as texturas prontas.
-export const manager = THREE.DefaultLoadingManager;
-const imageLoader = new THREE.ImageLoader(manager);
 
-// Carrega uma imagem; se ela for maior que maxSize, reduz num canvas para gastar menos memória de vídeo
-export function loadTexture(url, { srgb = false, maxSize = 2048 } = {}) {
-  const tex = new THREE.Texture();
+export const manager = new THREE.LoadingManager();
+const imageLoader = new THREE.ImageLoader(manager);
+const cache = new Map();
+const queue = [];
+const listeners = new Set();
+export const textureStats = { total: 0, complete: 0, failed: 0, active: 0 };
+let running = 0, scheduled = false;
+const MAX_PARALLEL = 5;
+const VALID_QUALITY = [512, 1024, 2048];
+export function getTextureLimit(storage = typeof localStorage === 'undefined' ? null : localStorage) {
+  try { const value = Number(storage?.getItem('vespera-texture-limit')); return VALID_QUALITY.includes(value) ? value : 1024; }
+  catch { return 1024; }
+}
+export function onTextureProgress(listener) {
+  listeners.add(listener);
+  listener({ ...textureStats });
+  return () => listeners.delete(listener);
+}
+function notify() { for (const listener of listeners) listener({ ...textureStats }); }
+function pump() {
+  scheduled = false;
+  queue.sort((a, b) => a.priority - b.priority);
+  while (running < MAX_PARALLEL && queue.length) {
+    const job = queue.shift();
+    running++; textureStats.active = running; notify();
+    imageLoader.load(job.url, (img) => {
+      try {
+        const scale = Math.min(1, job.maxSize / Math.max(1, img.width), job.maxSize / Math.max(1, img.height));
+        if (scale < 1) {
+          const [c, g] = canvas(Math.max(1, Math.floor(img.width * scale)), Math.max(1, Math.floor(img.height * scale)));
+          g.drawImage(img, 0, 0, c.width, c.height);
+          job.texture.image = c;
+        } else job.texture.image = img;
+        job.texture.needsUpdate = true;
+      } catch (error) { console.warn('Falha ao preparar textura:', job.url, error); textureStats.failed++; }
+      settle();
+    }, undefined, () => { textureStats.failed++; console.warn('Textura ausente; usando reserva:', job.url); settle(); });
+    function settle() { running--; textureStats.active = running; textureStats.complete++; notify(); pump(); }
+  }
+}
+function enqueue(job) {
+  queue.push(job); textureStats.total++; notify();
+  if (!scheduled) { scheduled = true; queueMicrotask(pump); }
+}
+export function loadTexture(url, { srgb = false, maxSize = 2048, priority = 1 } = {}) {
+  const size = Math.min(maxSize, getTextureLimit());
+  const key = url + '|' + srgb + '|' + size;
+  if (cache.has(key)) return cache.get(key);
+  const [c, g] = canvas(4);
+  g.fillStyle = srgb ? '#938b78' : '#8080ff'; g.fillRect(0, 0, 4, 4);
+  g.fillStyle = srgb ? '#857d70' : '#7a7af0'; g.fillRect(0, 0, 2, 2); g.fillRect(2, 2, 2, 2);
+  const tex = new THREE.Texture(c);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.anisotropy = 8;
+  tex.anisotropy = 4;
   if (srgb) tex.colorSpace = THREE.SRGBColorSpace;
-  imageLoader.load(url, (img) => {
-    if (img.width > maxSize) {
-      const [c, g] = canvas(maxSize, Math.round((img.height * maxSize) / img.width));
-      g.drawImage(img, 0, 0, c.width, c.height);
-      tex.image = c;
-    } else tex.image = img;
-    tex.needsUpdate = true;
-  });
+  tex.needsUpdate = true;
+  cache.set(key, tex);
+  enqueue({ url, texture: tex, maxSize: size, priority });
   return tex;
 }
 
@@ -28,7 +68,7 @@ export function polyHavenMaterial(id, options = {}) {
   const dir = `assets/textures/${id}`;
   const arm = loadTexture(`${dir}/arm.jpg`, { maxSize: 1024 });
   return new THREE.MeshStandardMaterial({
-    map: loadTexture(`${dir}/diff.jpg`, { srgb: true }),
+    map: loadTexture(`${dir}/diff.jpg`, { srgb: true, priority: 0 }),
     normalMap: loadTexture(`${dir}/nor_gl.jpg`, { maxSize: 1024 }),
     aoMap: arm,
     roughnessMap: arm,
@@ -43,7 +83,7 @@ export function polyHavenMaterial(id, options = {}) {
 export function ambientCgMaterial(dir) {
   const base = `assets/facades/${dir}`;
   return new THREE.MeshStandardMaterial({
-    map: loadTexture(`${base}/color.jpg`, { srgb: true }),
+    map: loadTexture(`${base}/color.jpg`, { srgb: true, priority: 0 }),
     normalMap: loadTexture(`${base}/normal.jpg`, { maxSize: 1024 }),
     roughnessMap: loadTexture(`${base}/rough.jpg`, { maxSize: 1024 }),
     metalnessMap: loadTexture(`${base}/metal.jpg`, { maxSize: 1024 }),

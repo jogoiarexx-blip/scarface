@@ -1,12 +1,19 @@
-# IMPÉRIO: REIS DE PORTO VESPER — Vertical slice 0.2.0
+# VÉSPERA: CIDADE DE SANGUE — Versão 0.3.0
 
 Jogo original Three.js/Vite no navegador. Evolução da base Cidade Livre. Preserva os veículos, trânsito, pedestres, fazenda, aeroporto e ciclo de luz, e adiciona o começo do universo Porto Vesper. **O GDD completo é um plano de produção, não um conjunto de funcionalidades concluídas.**
 
 ## Onde jogar
 
-Endereço do repositório de destino: [GitHub Pages do scarface](https://jogoiarexx-blip.github.io/scarface/). **O site publicado só receberá esta versão depois que o projeto atualizado for enviado à branch `main` e o workflow terminar com sucesso.**
+Endereço do repositório de destino: [GitHub Pages do scarface](https://jogoiarexx-blip.github.io/scarface/). O código atualizado será publicado via GitHub Actions após o workflow de Pages concluir.
 
 ## Novidades do primeiro recorte
+
+- **Novo título:** Véspera: Cidade de Sangue. Porto Vesper continua sendo o nome da cidade, não do jogo.
+- **Menu principal:** novo jogo, continuar, opções, créditos, pausa com retorno ao menu.
+- **Carregamento progressivo:** cache, limite de 5 imagens em paralelo, texturas de reserva, redução proporcional e fallback para erro.
+- **Inicialização:** núcleo de personagens primeiro; aviões, modelos extras, animais e céu HDR carregam depois de entrar na partida.
+- **Opções:** qualidade gráfica e limite de resolução das texturas (512/1024/2048). Isto economiza memória da GPU, não os bytes baixados originalmente.
+
 
 - **Santa Ângela:** 4 quadras com 24 imóveis definidos por lotes/IDs. Dois interiores reais (Oficina Valença, Bar Atlântico) com portas físicas (E).
 - **Missões:** Volta ao cais (Helena, chaves, carro) e Portas abertas (Rafael). A terceira ainda não existe.
