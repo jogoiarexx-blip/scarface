@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cidade Livre</title>
+    <title>Império: Reis de Porto Vesper — Protótipo</title>
     <style>
       html, body { margin: 0; height: 100%; overflow: hidden; background: #9cc9ef; font-family: system-ui, sans-serif; }
       canvas { display: block; }
@@ -22,6 +22,28 @@
         background: #000b; color: #fff; text-align: center; cursor: pointer; }
       #start h1 { margin: 0 0 8px; font-size: 60px; letter-spacing: 3px; color: #ffd54a; text-shadow: 0 4px 0 #b8860b; }
       #start p { margin: 6px; font-size: 18px; }
+      #start h1 { font-size: clamp(34px, 5vw, 62px); color: #eac98c; text-shadow: 0 2px 0 #77592b; }
+      #start { background: linear-gradient(125deg, #080f13eb, #142a2ce5); padding: 18px; }
+      #mission-box { position: fixed; top: 12px; right: 18px; max-width: 355px; padding: 13px 17px;
+        color: #fff4d8; background: #101d20de; border-left: 3px solid #d7b16c; border-radius: 4px;
+        font-size: 13px; line-height: 1.5; pointer-events: none; }
+      #account { font-weight: 750; font-size: 12px; letter-spacing: 1px; color: #e8be77; }
+      #mission-objective { margin-top: 5px; }
+      .menu-panel { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+        z-index: 5; background: #101b20f5; color: #f2e5ce; border: 1px solid #967648;
+        border-radius: 8px; box-shadow: 0 0 0 100vmax #0008, 0 18px 60px #0009;
+        width: min(420px, calc(100% - 38px)); padding: 24px; text-align: center; }
+      .menu-panel h2 { margin: 0 0 10px; font: 700 24px Georgia,serif; color: #eac98c; }
+      .menu-panel button { border: 1px solid #c7a66b; border-radius: 4px; background: #374946;
+        color: white; padding: 12px 16px; cursor: pointer; margin: 5px; font-size: 14px; }
+      .menu-panel button:disabled { opacity: .4; cursor: not-allowed; }
+      [hidden] { display: none !important; }
+      @media (max-width: 760px) {
+        #hud { top: auto; bottom: 210px; left: 8px; font-size: 11px; max-width: 230px; }
+        #mission-box { top: 8px; right: 8px; left: 8px; max-width: unset; padding: 8px; font-size: 12px; }
+        #stats { bottom: 12px; right: 8px; font-size: 18px; }
+        #minimap { bottom: 8px; left: 8px; width: 130px; height: 130px; }
+      }
     </style>
   </head>
   <body>
@@ -30,13 +52,23 @@
     <div id="prompt"></div>
     <div id="toast"></div>
     <canvas id="minimap" width="180" height="180"></canvas>
+    <div id="mission-box"><div id="account">PORTO VESPER · 1988</div><div id="mission-objective">Preparando missão…</div></div>
+    <div id="pause-menu" class="menu-panel" hidden>
+      <h2>Jogo pausado</h2><p>O mundo está congelado até você continuar.</p>
+      <button id="resume-game">Continuar (P)</button><button id="save-game">Salvar partida</button>
+    </div>
+    <div id="empire-panel" class="menu-panel" hidden>
+      <h2>Meu império</h2><p id="empire-summary"></p>
+      <button id="upgrade-workshop">Reformar a oficina</button><button id="close-empire">Voltar ao jogo (I)</button>
+    </div>
     <div id="start">
-      <h1>CIDADE LIVRE</h1>
+      <h1>IMPÉRIO: REIS DE PORTO VESPER</h1>
       <p id="start-text">Carregando gráficos…</p>
-      <p style="opacity: .7">WASD andar · Mouse câmera · F entrar/sair de carros e do avião</p>
-      <p style="opacity: .7">Aeroporto a leste (✈ no minimapa) com Boeing 747, avião comercial, jato executivo e caça · Fazenda ao lado</p>
-      <p style="opacity: .7">G muda a qualidade dos gráficos (Baixo, Médio, Alto, Ultra) · H alterna dia, pôr do sol e noite</p>
-      <p style="opacity: .45; font-size: 12px; margin-top: 18px">Modelos: Quaternius (CC0) · Aviões por Poly by Google, Miha Lunar e jeremy (CC-BY 3.0) · Texturas e céus: Poly Haven e ambientCG (CC0)</p>
+      <p style="opacity: .7">WASD andar · Mouse câmera · E interagir · F veículos · I império · P pausar</p>
+      <p style="opacity: .7">Primeiro bairro: Santa Ângela · Oficina Valença e Bar Atlântico com interiores acessíveis</p>
+      <p style="opacity: .7">G qualidade gráfica · H alterna dia, pôr do sol e noite · K salva o progresso</p>
+      <p style="opacity: .65; font-size: 12px; margin-top: 18px">Protótipo do Ato I · Apenas as duas primeiras missões estão disponíveis.</p>
+      <p style="opacity: .45; font-size: 12px; margin-top: 10px">Modelos: Quaternius (CC0) · Aviões por Poly by Google, Miha Lunar e jeremy (CC-BY 3.0) · Texturas e céus: Poly Haven e ambientCG (CC0)</p>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>

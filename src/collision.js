@@ -5,6 +5,7 @@ import { clamp } from './util.js';
 export function resolveCircle(pos, radius, colliders) {
   let hit = false;
   for (const c of colliders) {
+    if (c.disabled || pos.y < (c.minY ?? 0) - 1.75) continue;
     if (pos.x + radius < c.minX || pos.x - radius > c.maxX || pos.z + radius < c.minZ || pos.z - radius > c.maxZ) continue;
     if (pos.y > c.h) continue;
     const dx = pos.x - clamp(pos.x, c.minX, c.maxX);
@@ -32,6 +33,7 @@ export function resolveCircle(pos, radius, colliders) {
 // Caixa que contém o ponto (com margem), usada para o avião bater em prédios
 export function boxAt(pos, pad, colliders) {
   for (const c of colliders) {
+    if (c.disabled) continue;
     if (pos.y < c.h + pad && pos.x > c.minX - pad && pos.x < c.maxX + pad && pos.z > c.minZ - pad && pos.z < c.maxZ + pad) return c;
   }
   return null;

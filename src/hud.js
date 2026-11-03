@@ -1,7 +1,7 @@
 import { GRID, ROAD, BLOCK, HALF, AIRPORT, APRON, FARM, roadCoord } from './config.js';
 
 const HELP = {
-  foot: '<b>A pé</b><br>WASD andar · Shift correr · Espaço pular<br>Mouse gira a câmera (ou arraste)<br>F entrar em carro ou avião<br>G qualidade dos gráficos · H dia / pôr do sol / noite',
+  foot: '<b>A pé</b><br>WASD andar · Shift correr · Espaço pular<br>Mouse gira a câmera (ou arraste)<br>F entrar em carro ou avião<br>E interagir · I império · K salvar · P pausar<br>G gráficos · H dia / pôr do sol / noite',
   car: '<b>Dirigindo</b><br>W acelerar · S frear / ré<br>A / D virar · Espaço freio de mão<br>F sair do carro',
   plane:
     '<b>Pilotando</b><br>W / S mais / menos motor<br>↑ / ↓ levantar / baixar o nariz<br>← / → inclinar (faz a curva)<br>A / D leme · Espaço freio no chão<br>Acelere e puxe ↑ para decolar: caça e jato ~200 km/h, comercial ~220, 747 ~250<br>F sair (parado no chão)',
@@ -32,7 +32,7 @@ export class Hud {
     if (text) this.prompt.textContent = text;
   }
 
-  update(dt, { mode, car, plane, planes, focus, heading, cars }) {
+  update(dt, { mode, car, plane, planes, focus, heading, cars, target }) {
     if (mode !== this.mode) {
       this.mode = mode;
       this.hud.innerHTML = HELP[mode];
@@ -49,11 +49,11 @@ export class Hud {
       this.toastTimer -= dt;
       if (this.toastTimer <= 0) this.toastEl.style.opacity = 0;
     }
-    this.drawMap(focus, heading, cars, planes);
+    this.drawMap(focus, heading, cars, planes, target);
   }
 
   // Minimapa com o norte para cima, centrado no jogador
-  drawMap(focus, heading, cars, planes) {
+  drawMap(focus, heading, cars, planes, target) {
     const ctx = this.ctx;
     const c = MAP / 2;
     ctx.save();
@@ -97,6 +97,20 @@ export class Hud {
         pz *= (c - 12) / d;
       }
       ctx.fillText('✈', c + px, c + pz);
+    }
+
+    if (target) {
+      const dx = (target.x - focus.x) * SCALE;
+      const dz = (target.z - focus.z) * SCALE;
+      const r = Math.hypot(dx, dz);
+      const k = r > c - 10 ? (c - 10) / r : 1;
+      ctx.fillStyle = '#ffd54a';
+      ctx.strokeStyle = '#1c170c';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(c + dx * k, c + dz * k, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
     }
 
     // Seta do jogador: o canvas gira no sentido horário, por isso π − heading

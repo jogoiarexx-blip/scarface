@@ -19,7 +19,7 @@ export function addStreetProps({ metal, lamps, plain, pools }, blocks, addCollid
         streetLamp(metal, lamps, pools, x, z, nx, nz);
         addCollider(x, z, 0.4, 0.4, 8);
       }
-      if (b.type === 'park' || b.type === 'houses') continue;
+      if (b.type === 'park' || b.type === 'houses' || b.type === 'vesper') continue;
       // Banco e lixeira encostados no lado de dentro da calçada
       const inner = CURB - SIDEWALK + 0.5;
       const along = (rand() - 0.5) * 30;

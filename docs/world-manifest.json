@@ -1,0 +1,663 @@
+{
+  "schemaVersion": 1,
+  "seed": 7,
+  "generatorVersion": "legacy-1+vesper-1",
+  "district": "santa-angela",
+  "blocks": [
+    "sa-b3-3",
+    "sa-b4-3",
+    "sa-b3-4",
+    "sa-b4-4"
+  ],
+  "lots": [
+    {
+      "id": "sa-3-3-loja-ancora",
+      "x": -47,
+      "z": -47,
+      "w": 22,
+      "d": 10,
+      "tier": "shell",
+      "name": "COMÉRCIO LOCAL",
+      "use": "retail",
+      "normalZ": -1,
+      "blockId": "sa-b3-3",
+      "streetId": "sul-sa-b3-3",
+      "lotId": "sa-3-3-loja-ancora",
+      "frontageMeters": 22,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        -47,
+        0.2,
+        -52
+      ],
+      "interiorTier": "shell",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-3-3-loja",
+      "x": -28,
+      "z": -47,
+      "w": 16,
+      "d": 10,
+      "tier": "shell",
+      "name": "FARMÁCIA CENTRAL",
+      "use": "retail",
+      "normalZ": -1,
+      "blockId": "sa-b3-3",
+      "streetId": "sul-sa-b3-3",
+      "lotId": "sa-3-3-loja",
+      "frontageMeters": 16,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        -28,
+        0.2,
+        -52
+      ],
+      "interiorTier": "shell",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-3-3-fachada",
+      "x": -16,
+      "z": -47,
+      "w": 8,
+      "d": 10,
+      "tier": "none",
+      "name": "CASA 42",
+      "use": "residential",
+      "normalZ": -1,
+      "blockId": "sa-b3-3",
+      "streetId": "sul-sa-b3-3",
+      "lotId": "sa-3-3-fachada",
+      "frontageMeters": 8,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        -16,
+        0.2,
+        -52
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-3-3-norte-1",
+      "x": -47,
+      "z": -15,
+      "w": 22,
+      "d": 10,
+      "tier": "none",
+      "name": "RESIDENCIAL VESPER",
+      "use": "residential",
+      "normalZ": 1,
+      "blockId": "sa-b3-3",
+      "streetId": "norte-sa-b3-3",
+      "lotId": "sa-3-3-norte-1",
+      "frontageMeters": 22,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        -47,
+        0.2,
+        -10
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-3-3-norte-2",
+      "x": -28,
+      "z": -15,
+      "w": 16,
+      "d": 10,
+      "tier": "shell",
+      "name": "BAZAR DO BAIRRO",
+      "use": "retail",
+      "normalZ": 1,
+      "blockId": "sa-b3-3",
+      "streetId": "norte-sa-b3-3",
+      "lotId": "sa-3-3-norte-2",
+      "frontageMeters": 16,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        -28,
+        0.2,
+        -10
+      ],
+      "interiorTier": "shell",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-3-3-norte-3",
+      "x": -16,
+      "z": -15,
+      "w": 8,
+      "d": 10,
+      "tier": "none",
+      "name": "CASA 44",
+      "use": "residential",
+      "normalZ": 1,
+      "blockId": "sa-b3-3",
+      "streetId": "norte-sa-b3-3",
+      "lotId": "sa-3-3-norte-3",
+      "frontageMeters": 8,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        -16,
+        0.2,
+        -10
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-4-3-loja-ancora",
+      "x": 23,
+      "z": -47,
+      "w": 22,
+      "d": 10,
+      "tier": "shell",
+      "name": "COMÉRCIO LOCAL",
+      "use": "retail",
+      "normalZ": -1,
+      "blockId": "sa-b4-3",
+      "streetId": "sul-sa-b4-3",
+      "lotId": "sa-4-3-loja-ancora",
+      "frontageMeters": 22,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        23,
+        0.2,
+        -52
+      ],
+      "interiorTier": "shell",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-4-3-loja",
+      "x": 42,
+      "z": -47,
+      "w": 16,
+      "d": 10,
+      "tier": "shell",
+      "name": "MERCADO PALMEIRAS",
+      "use": "retail",
+      "normalZ": -1,
+      "blockId": "sa-b4-3",
+      "streetId": "sul-sa-b4-3",
+      "lotId": "sa-4-3-loja",
+      "frontageMeters": 16,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        42,
+        0.2,
+        -52
+      ],
+      "interiorTier": "shell",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-4-3-fachada",
+      "x": 54,
+      "z": -47,
+      "w": 8,
+      "d": 10,
+      "tier": "none",
+      "name": "CASA 42",
+      "use": "residential",
+      "normalZ": -1,
+      "blockId": "sa-b4-3",
+      "streetId": "sul-sa-b4-3",
+      "lotId": "sa-4-3-fachada",
+      "frontageMeters": 8,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        54,
+        0.2,
+        -52
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-4-3-norte-1",
+      "x": 23,
+      "z": -15,
+      "w": 22,
+      "d": 10,
+      "tier": "none",
+      "name": "RESIDENCIAL VESPER",
+      "use": "residential",
+      "normalZ": 1,
+      "blockId": "sa-b4-3",
+      "streetId": "norte-sa-b4-3",
+      "lotId": "sa-4-3-norte-1",
+      "frontageMeters": 22,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        23,
+        0.2,
+        -10
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-4-3-norte-2",
+      "x": 42,
+      "z": -15,
+      "w": 16,
+      "d": 10,
+      "tier": "shell",
+      "name": "BAZAR DO BAIRRO",
+      "use": "retail",
+      "normalZ": 1,
+      "blockId": "sa-b4-3",
+      "streetId": "norte-sa-b4-3",
+      "lotId": "sa-4-3-norte-2",
+      "frontageMeters": 16,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        42,
+        0.2,
+        -10
+      ],
+      "interiorTier": "shell",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-4-3-norte-3",
+      "x": 54,
+      "z": -15,
+      "w": 8,
+      "d": 10,
+      "tier": "none",
+      "name": "CASA 44",
+      "use": "residential",
+      "normalZ": 1,
+      "blockId": "sa-b4-3",
+      "streetId": "norte-sa-b4-3",
+      "lotId": "sa-4-3-norte-3",
+      "frontageMeters": 8,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        54,
+        0.2,
+        -10
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-bar-atlantico",
+      "x": -47,
+      "z": 30,
+      "w": 22,
+      "d": 24,
+      "tier": "full",
+      "name": "BAR ATLÂNTICO",
+      "use": "entertainment",
+      "normalZ": -1,
+      "blockId": "sa-b3-4",
+      "streetId": "sul-sa-b3-4",
+      "lotId": "sa-bar-atlantico",
+      "frontageMeters": 22,
+      "depthMeters": 24,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        -47,
+        0.2,
+        18
+      ],
+      "interiorTier": "full",
+      "isEnterable": true
+    },
+    {
+      "id": "sa-3-4-loja",
+      "x": -28,
+      "z": 23,
+      "w": 16,
+      "d": 10,
+      "tier": "shell",
+      "name": "FARMÁCIA CENTRAL",
+      "use": "retail",
+      "normalZ": -1,
+      "blockId": "sa-b3-4",
+      "streetId": "sul-sa-b3-4",
+      "lotId": "sa-3-4-loja",
+      "frontageMeters": 16,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        -28,
+        0.2,
+        18
+      ],
+      "interiorTier": "shell",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-3-4-fachada",
+      "x": -16,
+      "z": 23,
+      "w": 8,
+      "d": 10,
+      "tier": "none",
+      "name": "CASA 42",
+      "use": "residential",
+      "normalZ": -1,
+      "blockId": "sa-b3-4",
+      "streetId": "sul-sa-b3-4",
+      "lotId": "sa-3-4-fachada",
+      "frontageMeters": 8,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        -16,
+        0.2,
+        18
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-3-4-norte-1",
+      "x": -47,
+      "z": 55,
+      "w": 22,
+      "d": 10,
+      "tier": "none",
+      "name": "RESIDENCIAL VESPER",
+      "use": "residential",
+      "normalZ": 1,
+      "blockId": "sa-b3-4",
+      "streetId": "norte-sa-b3-4",
+      "lotId": "sa-3-4-norte-1",
+      "frontageMeters": 22,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        -47,
+        0.2,
+        60
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-3-4-norte-2",
+      "x": -28,
+      "z": 55,
+      "w": 16,
+      "d": 10,
+      "tier": "shell",
+      "name": "BAZAR DO BAIRRO",
+      "use": "retail",
+      "normalZ": 1,
+      "blockId": "sa-b3-4",
+      "streetId": "norte-sa-b3-4",
+      "lotId": "sa-3-4-norte-2",
+      "frontageMeters": 16,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        -28,
+        0.2,
+        60
+      ],
+      "interiorTier": "shell",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-3-4-norte-3",
+      "x": -16,
+      "z": 55,
+      "w": 8,
+      "d": 10,
+      "tier": "none",
+      "name": "CASA 44",
+      "use": "residential",
+      "normalZ": 1,
+      "blockId": "sa-b3-4",
+      "streetId": "norte-sa-b3-4",
+      "lotId": "sa-3-4-norte-3",
+      "frontageMeters": 8,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        -16,
+        0.2,
+        60
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-oficina-valenca",
+      "x": 23,
+      "z": 30,
+      "w": 22,
+      "d": 24,
+      "tier": "full",
+      "name": "OFICINA VALENÇA",
+      "use": "entertainment",
+      "normalZ": -1,
+      "blockId": "sa-b4-4",
+      "streetId": "sul-sa-b4-4",
+      "lotId": "sa-oficina-valenca",
+      "frontageMeters": 22,
+      "depthMeters": 24,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        23,
+        0.2,
+        18
+      ],
+      "interiorTier": "full",
+      "isEnterable": true
+    },
+    {
+      "id": "sa-4-4-loja",
+      "x": 42,
+      "z": 23,
+      "w": 16,
+      "d": 10,
+      "tier": "shell",
+      "name": "MERCADO PALMEIRAS",
+      "use": "retail",
+      "normalZ": -1,
+      "blockId": "sa-b4-4",
+      "streetId": "sul-sa-b4-4",
+      "lotId": "sa-4-4-loja",
+      "frontageMeters": 16,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        42,
+        0.2,
+        18
+      ],
+      "interiorTier": "shell",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-4-4-fachada",
+      "x": 54,
+      "z": 23,
+      "w": 8,
+      "d": 10,
+      "tier": "none",
+      "name": "CASA 42",
+      "use": "residential",
+      "normalZ": -1,
+      "blockId": "sa-b4-4",
+      "streetId": "sul-sa-b4-4",
+      "lotId": "sa-4-4-fachada",
+      "frontageMeters": 8,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        -1
+      ],
+      "entranceWorld": [
+        54,
+        0.2,
+        18
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-4-4-norte-1",
+      "x": 23,
+      "z": 55,
+      "w": 22,
+      "d": 10,
+      "tier": "none",
+      "name": "RESIDENCIAL VESPER",
+      "use": "residential",
+      "normalZ": 1,
+      "blockId": "sa-b4-4",
+      "streetId": "norte-sa-b4-4",
+      "lotId": "sa-4-4-norte-1",
+      "frontageMeters": 22,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        23,
+        0.2,
+        60
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-4-4-norte-2",
+      "x": 42,
+      "z": 55,
+      "w": 16,
+      "d": 10,
+      "tier": "shell",
+      "name": "BAZAR DO BAIRRO",
+      "use": "retail",
+      "normalZ": 1,
+      "blockId": "sa-b4-4",
+      "streetId": "norte-sa-b4-4",
+      "lotId": "sa-4-4-norte-2",
+      "frontageMeters": 16,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        42,
+        0.2,
+        60
+      ],
+      "interiorTier": "shell",
+      "isEnterable": false
+    },
+    {
+      "id": "sa-4-4-norte-3",
+      "x": 54,
+      "z": 55,
+      "w": 8,
+      "d": 10,
+      "tier": "none",
+      "name": "CASA 44",
+      "use": "residential",
+      "normalZ": 1,
+      "blockId": "sa-b4-4",
+      "streetId": "norte-sa-b4-4",
+      "lotId": "sa-4-4-norte-3",
+      "frontageMeters": 8,
+      "depthMeters": 10,
+      "frontageNormal": [
+        0,
+        1
+      ],
+      "entranceWorld": [
+        54,
+        0.2,
+        60
+      ],
+      "interiorTier": "none",
+      "isEnterable": false
+    }
+  ]
+}
+

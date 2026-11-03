@@ -23,7 +23,7 @@ export class Graphics {
     document.body.prepend(r.domElement);
     this.renderer = r;
     this.composer = null;
-    this.level = 2;
+    this.level = 1; // primeiro carregamento mais leve; G habilita Alto/Ultra
     this.auto = true; // desce a qualidade sozinho se o FPS ficar baixo
     this.fps = 60;
     this.frames = 0;

@@ -238,12 +238,12 @@ export function buildCity(scene) {
       const cx = roadCoord(i) + CELL / 2;
       const cz = roadCoord(j) + CELL / 2;
       const ring = Math.max(Math.abs(i - (GRID - 1) / 2), Math.abs(j - (GRID - 1) / 2));
-      const type = rand() < 0.12 ? 'park' : ring < 1.6 ? 'downtown' : ring < 2.6 ? 'mid' : 'houses';
+      const type = (i === 3 || i === 4) && (j === 3 || j === 4) ? 'vesper' : rand() < 0.12 ? 'park' : ring < 1.6 ? 'downtown' : ring < 2.6 ? 'mid' : 'houses';
       L.sidewalk.push(box(BLOCK, 0.18, BLOCK, '#ffffff', [cx, 0.09, cz]));
       const lot = box(inner, 0.04, inner, '#ffffff', [cx, LOT - 0.02, cz]);
       (type === 'park' || type === 'houses' ? L.grass : L.sidewalk).push(lot);
-      builders[type](cx, cz);
-      blocks.push({ i, j, cx, cz, type });
+      if (builders[type]) builders[type](cx, cz);
+      blocks.push({ i, j, cx, cz, type, id: `legacy-b${i}-${j}`, districtId: 'cidade-livre', lotIds: [] });
     }
   }
 
