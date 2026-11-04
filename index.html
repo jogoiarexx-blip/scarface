@@ -4,6 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Véspera: Cidade de Sangue</title>
+    <!-- Ícone explícito: evita a busca automática por /favicon.ico na raiz do domínio. -->
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <!-- Reserva para GitHub Pages configurado para publicar diretamente a branch.
+         No deploy recomendado via Vite, os imports são empacotados localmente. -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+        }
+      }
+    </script>
     <style>
       html, body { margin: 0; height: 100%; overflow: hidden; background: #9cc9ef; font-family: system-ui, sans-serif; }
       canvas { display: block; }
@@ -140,6 +152,6 @@ button:focus-visible,select:focus-visible { outline:3px solid #f4cb92; outline-o
         <div class="dialog-actions"><button id="credits-close" class="primary">Voltar</button></div>
       </div></div>
     </div>
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="./src/main.js"></script>
   </body>
 </html>

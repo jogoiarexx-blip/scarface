@@ -1,8 +1,17 @@
 import * as THREE from 'three';
 import { canvas, toTexture } from './textures.js';
+import { resolveGameAsset } from './asset-paths.js';
 
 
 export const manager = new THREE.LoadingManager();
+// Vite copia public/assets para dist/assets; Pages em modo branch mantém public/assets.
+// Este mapeamento só é usado quando os módulos são carregados sem Vite.
+const usingRawGitHubPages = typeof import.meta.env === 'undefined';
+if (usingRawGitHubPages && typeof document !== 'undefined') {
+  manager.setURLModifier((url) =>
+    resolveGameAsset(url, { raw: true, base: document.baseURI })
+  );
+}
 const imageLoader = new THREE.ImageLoader(manager);
 const cache = new Map();
 const queue = [];

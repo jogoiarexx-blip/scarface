@@ -51,3 +51,13 @@ npm run build
 O projeto inclui workflow GitHub Pages na branch `main`. Os testes estáticos não substituem playtest no navegador. Ver [auditoria](docs/AUDITORIA.md), [QA](docs/QA_EVIDENCIAS.md) e [roadmap](docs/ROADMAP.md).
 
 Créditos e licenças dos assets externos: [CREDITS.md](CREDITS.md). Visuais e história de Porto Vesper são originais; nenhum material do filme/jogo Scarface foi incluído.
+
+## Correção de rotas (0.3.1)
+
+- O menu possui favicon local em `favicon.svg`, sem pedir `/favicon.ico` na raiz do domínio.
+- O HTML usa entrada relativa `./src/main.js` para não apontar indevidamente para `https://jogoiarexx-blip.github.io/src/main.js`.
+- Quando o Pages serve diretamente a branch, a import map usa Three.js 0.186.1 em CDN e o gerenciador de recursos reescreve `assets/` para `public/assets/`.
+- Quando o GitHub Pages usa **Settings → Pages → Source: GitHub Actions** (recomendado), o Vite empacota os imports e utiliza os assets locais em `dist/assets/`, sem usar a CDN.
+- Teste de rotas: `node --test src/asset-paths.test.js`, incluído em `npm test`.
+
+Os erros 404 devem ser avaliados pelo **URL completo** na aba Network; o ícone ausente não impede sozinho o jogo de iniciar.
