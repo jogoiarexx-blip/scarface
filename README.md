@@ -65,3 +65,9 @@ Os erros 404 devem ser avaliados pelo **URL completo** na aba Network; o ícone 
 ## Texturas da Oficina — v0.3.3
 
 A Oficina Valença recebeu materiais de concreto PBR, paredes envelhecidas, madeira, chapa de aço, metal pintado e borracha. Os mapas leves e o plano de QA estão em [docs/OFICINA_TEXTURAS_0.3.3.md](docs/OFICINA_TEXTURAS_0.3.3.md).
+
+## 0.3.4 · Fachada realista e leve da Oficina Valença
+
+O letreiro foi substituído por uma fachada baseada na arte aprovada, condensada em **um WebP de 6,8 KB**. O atlas alimenta quatro planos com UVs distintas: placa legível, vitrine, serviços e porta decorativa. Foi criada uma abertura de garagem real, sem collider frontal, além da porta anterior da campanha. As missões e saves continuam iguais.
+
+Ver [detalhes da atualização](docs/ATUALIZACAO_0.3.4_FACHADA_OFICINA.md).

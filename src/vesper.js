@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Character } from './people.js';
 import { defineVesperLots, validateVesperLots } from './vesper-layout.js';
+import { addOptimizedWorkshopFacade } from './oficina-facade.js';
 import { workshopBox, workshopFloor, workshopMaterial } from './workshop-textures.js';
 
 
@@ -227,7 +228,18 @@ export class VesperDistrict {
     const gapLeft = entryX - gap / 2;
     const gapRight = entryX + gap / 2;
     wall((left + gapLeft) / 2, front + 0.15, gapLeft - left, 0.3);
-    wall((gapRight + right) / 2, front + 0.15, right - gapRight, 0.3);
+    if (isWorkshop) {
+      // Abertura física de 6,5 m para a garagem, preservando a porta da missão.
+      const garageLeft = b.x + 0.10;
+      const garageRight = b.x + 6.60;
+      wall((gapRight + garageLeft) / 2, front + 0.15, garageLeft - gapRight, 0.3);
+      wall((garageRight + right) / 2, front + 0.15, right - garageRight, 0.3);
+      // Lintel superior mantém o fechamento estrutural acima da garagem.
+      cube(g, (garageLeft + garageRight) / 2, floor + 3.67, front + 0.15,
+        garageRight - garageLeft, 1.06, 0.3, COLORS.plaster);
+    } else {
+      wall((gapRight + right) / 2, front + 0.15, right - gapRight, 0.3);
+    }
     // Vão da porta: a parte superior é fixa e a folha abre em pivô próprio.
     if (isWorkshop) workshopBox(g, entryX, floor + 3.35, front + 0.15, gap, 1.5, 0.3, 'plaster');
     else cube(g, entryX, floor + 3.35, front + 0.15, gap, 1.5, 0.3, COLORS.trim);
@@ -255,14 +267,11 @@ export class VesperDistrict {
     const roof = cube(g, b.x, floor + height + 0.13, b.z, b.w + 0.45, 0.25, b.d + 0.45, 0x8b8c83);
     b.roof = roof;
     b.roomBounds = { minX: left + 0.3, maxX: right - 0.3, minZ: front + 0.3, maxZ: back - 0.3 };
-    const s = sign(this.scene, title, b.x + 2, front, Math.min(12, b.w - 4), isWorkshop ? '#5b4034' : '#214a4c');
-    if (isWorkshop) {
-      cube(g, b.x + 1.9, floor + 3.55, front + 0.08, Math.min(12.6, b.w - 3.2), 0.18, 0.18, 0x2b2b2e);
-      cube(g, b.x + 1.9, floor + 2.55, front + 0.08, Math.min(12.6, b.w - 3.2), 0.18, 0.18, 0x2b2b2e);
-      cube(g, entryX + 3.95, floor + 1.95, front + 0.07, 2.4, 2.0, 0.08, COLORS.glass, { transparent: true, opacity: 0.42, depthWrite: false });
-      cube(g, entryX + 6.6, floor + 1.95, front + 0.07, 2.4, 2.0, 0.08, COLORS.glass, { transparent: true, opacity: 0.42, depthWrite: false });
-      this.businessSigns.push(s);
-    }
+    // Só a oficina recebe fachada fotográfica; o Bar Atlântico mantém seu próprio letreiro.
+    const s = isWorkshop
+      ? addOptimizedWorkshopFacade(g, b, floor, front, entryX, gap, this.scene)
+      : sign(this.scene, title, b.x + 2, front, Math.min(12, b.w - 4), '#214a4c');
+    if (isWorkshop) this.businessSigns.push(s);
     // NPCs reais com animação idle e prompt de conversa.
     const actor = new Character(isWorkshop ? 'casual_woman' : 'business_man');
     actor.group.position.set(b.x + 4.3, floor, b.z + 1);
@@ -353,9 +362,12 @@ export class VesperDistrict {
   setRenovated(renovated) {
     for (const { mesh } of this.businessSigns) mesh.material.color.set(renovated ? '#ffe2a6' : '#ffffff');
     for (const b of this.buildings) {
-      if (b.id !== 'sa-oficina-valenca' || !b.decorLights) continue;
-      b.decorLights[0].intensity = renovated ? 18 : 14;
-      b.decorLights[1].intensity = renovated ? 11 : 8;
+      if (b.id !== 'sa-oficina-valenca') continue;
+      if (b.decorLights) {
+        b.decorLights[0].intensity = renovated ? 18 : 14;
+        b.decorLights[1].intensity = renovated ? 11 : 8;
+      }
+      if (b.facadeLights) for (const light of b.facadeLights) light.intensity = renovated ? 6 : 4;
     }
   }
 
