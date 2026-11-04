@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { Character } from './people.js';
 import { defineVesperLots, validateVesperLots } from './vesper-layout.js';
+import { workshopBox, workshopFloor, workshopMaterial } from './workshop-textures.js';
+
 
 // Vertical slice de Santa Ângela. Cada lote tem identidade e dimensões fixas,
 // e os interiores FULL ocupam volumes reais do quarteirão, não teleportes.
@@ -8,6 +10,9 @@ const COLORS = {
   wall: 0xd3c4a7, trim: 0xf4e9d2, floor: 0x7c7364,
   workshop: 0xb58d5d, bar: 0x426a65, shell: 0xb9b7a9,
   glass: 0x264455, wood: 0x654431, steel: 0x52606a,
+  plaster: 0xe7dcc9, stripe: 0xb74f33, concrete: 0x8e8b83,
+  metalDark: 0x39424a, rubber: 0x1d1d1f, neonWarm: 0xffc77a,
+  neonCool: 0xb9efff, toolRed: 0xb5402e, toolBlue: 0x3f6790,
 };
 const boxGeo = new THREE.BoxGeometry(1, 1, 1);
 const materialCache = new Map();
@@ -29,6 +34,115 @@ function cube(parent, x, y, z, w, h, d, color, opts) {
   m.receiveShadow = true;
   parent.add(m);
   return m;
+}
+function plate(parent, x, y, z, w, d, color, ry = 0, opts) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), mat(color, { side: THREE.DoubleSide, ...opts }));
+  m.position.set(x, y, z);
+  m.rotation.x = -Math.PI / 2;
+  m.rotation.z = ry;
+  m.receiveShadow = true;
+  parent.add(m);
+  return m;
+}
+function panel(parent, x, y, z, w, h, color, ry = 0, opts) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat(color, { side: THREE.DoubleSide, ...opts }));
+  m.position.set(x, y, z);
+  m.rotation.y = ry;
+  parent.add(m);
+  return m;
+}
+function cyl(parent, x, y, z, radius, height, color, ry = 0, opts) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, height, 18), mat(color, opts));
+  m.position.set(x, y, z);
+  m.rotation.y = ry;
+  m.castShadow = true;
+  m.receiveShadow = true;
+  parent.add(m);
+  return m;
+}
+function pipe(parent, x, y, z, radius, length, color, rx = 0, rz = 0, opts) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, length, 14), mat(color, opts));
+  m.position.set(x, y, z);
+  m.rotation.z = Math.PI / 2 + rz;
+  m.rotation.x = rx;
+  m.castShadow = true;
+  m.receiveShadow = true;
+  parent.add(m);
+  return m;
+}
+function makeFluorescent(parent, x, y, z, width, color = COLORS.neonWarm) {
+  cube(parent, x, y, z, width, 0.08, 0.28, 0xd9ddd8);
+  cube(parent, x, y - 0.01, z, width - 0.15, 0.03, 0.16, 0xf6eedf, { emissive: color, emissiveIntensity: 0.55 });
+}
+function toolCabinet(parent, x, y, z, color = COLORS.toolRed) {
+  workshopBox(parent, x, y + 0.8, z, 1.2, 1.6, 0.65, color === COLORS.toolBlue ? 'blue' : 'red');
+  for (let i = 0; i < 4; i++) cube(parent, x, y + 0.22 + i * 0.32, z + 0.32, 0.92, 0.06, 0.03, 0xe7e1d7);
+  cube(parent, x - 0.34, y + 0.1, z + 0.18, 0.08, 0.08, 0.08, 0x202327);
+  cube(parent, x + 0.34, y + 0.1, z + 0.18, 0.08, 0.08, 0.08, 0x202327);
+}
+function tireStack(parent, x, y, z, count = 3) {
+  for (let i = 0; i < count; i++) {
+    const tire = cyl(parent, x, y + 0.24 + i * 0.28, z, 0.42, 0.24, COLORS.rubber, Math.PI / 2);
+    tire.material = workshopMaterial('rubber');
+  }
+}
+function serviceLift(parent, x, y, z) {
+  workshopBox(parent, x - 0.9, y + 1.7, z, 0.28, 3.4, 0.28, 'blue');
+  workshopBox(parent, x + 0.9, y + 1.7, z, 0.28, 3.4, 0.28, 'blue');
+  cube(parent, x - 0.45, y + 0.46, z, 0.95, 0.1, 0.22, COLORS.steel);
+  cube(parent, x + 0.45, y + 0.46, z, 0.95, 0.1, 0.22, COLORS.steel);
+  workshopBox(parent, x, y + 0.05, z, 2.5, 0.08, 4.2, 'steel', false);
+}
+function poster(parent, x, y, z, w, h, base, accent, ry = 0) {
+  panel(parent, x, y, z, w, h, base, ry);
+  panel(parent, x, y + 0.02, z + Math.cos(ry) * 0.01, w * 0.78, h * 0.18, accent, ry, { emissive: accent, emissiveIntensity: 0.08 });
+  panel(parent, x, y - h * 0.08, z + Math.cos(ry) * 0.01, w * 0.68, h * 0.44, 0xf0eadf, ry);
+}
+function rollerDoor(parent, x, y, z, w, h, side = 1) {
+  workshopBox(parent, x, y + h / 2, z, w, h, 0.08, 'steel', false);
+  for (let i = 0; i < 10; i++) cube(parent, x, y + 0.25 + i * (h / 10), z + side * 0.045, w - 0.08, 0.025, 0.02, 0xbab4aa);
+  cube(parent, x, y + h + 0.16, z, w + 0.18, 0.2, 0.18, COLORS.metalDark);
+}
+function makeWorkshopVisuals(group, b, floor, left, right, front, back) {
+  workshopFloor(group, b.x, floor + 0.048, b.z, b.w - 0.62, b.d - 0.62);
+  plate(group, b.x, floor + 0.03, b.z + 1.8, b.w - 1.2, 0.8, 0xe3a259);
+  plate(group, b.x - 5.3, floor + 0.031, b.z + 5.4, 3.8, 2.3, 0x363c44);
+  for (let i = 0; i < 6; i++) panel(group, left + 0.16, floor + 1.6, front + 1.5 + i * 3.1, 0.72, 2.5, COLORS.plaster, -Math.PI / 2);
+  panel(group, b.x, floor + 1.15, back - 0.16, b.w - 1.0, 1.0, COLORS.stripe, Math.PI);
+  panel(group, b.x, floor + 2.55, back - 0.15, b.w - 1.0, 1.8, COLORS.plaster, Math.PI);
+  rollerDoor(group, right - 0.17, floor + 0.02, b.z - 0.7, 0.3, 3.4, -1);
+  workshopBox(group, b.x + 7.15, floor + 2.0, b.z - 0.7, 0.1, 3.0, 4.2, 'steel');
+  serviceLift(group, b.x - 4.9, floor, b.z + 5.3);
+  toolCabinet(group, b.x + 7.3, floor + 0.05, b.z + 6.25);
+  toolCabinet(group, b.x + 7.3, floor + 0.05, b.z + 4.85, COLORS.toolBlue);
+  tireStack(group, b.x - 7.35, floor, b.z + 7.0, 4);
+  tireStack(group, b.x - 7.35, floor, b.z + 5.8, 3);
+  pipe(group, b.x + 6.0, floor + 1.65, b.z + 5.0, 0.04, 3.0, COLORS.steel);
+  cube(group, b.x + 6.7, floor + 2.25, b.z + 5.0, 1.2, 0.9, 0.9, 0xb9c8d0);
+  cube(group, b.x + 6.7, floor + 2.95, b.z + 5.0, 1.25, 0.18, 0.95, COLORS.metalDark);
+  workshopBox(group, b.x + 4.9, floor + 0.82, b.z - 4.0, 4.2, 1.05, 1.75, 'wood');
+  workshopBox(group, b.x + 4.9, floor + 1.44, b.z - 4.0, 4.0, 0.09, 1.65, 'wood', false);
+  cube(group, b.x + 3.3, floor + 1.76, b.z - 3.95, 0.54, 0.54, 0.54, 0xb8422e);
+  cube(group, b.x + 4.05, floor + 1.76, b.z - 3.95, 0.64, 0.38, 0.64, 0xc9a25d);
+  cube(group, b.x + 5.15, floor + 1.76, b.z - 4.0, 0.72, 0.3, 0.72, 0x9fa3a8);
+  cube(group, b.x + 6.2, floor + 1.76, b.z - 4.0, 0.68, 0.48, 0.38, 0x6a88b7);
+  cube(group, b.x + 7.2, floor + 2.1, b.z - 7.4, 1.5, 1.9, 0.1, 0xeadfcb, { emissive: 0xeadfcb, emissiveIntensity: 0.04 });
+  cube(group, b.x + 7.2, floor + 1.0, b.z - 7.2, 1.8, 0.12, 0.85, 0x6d5137);
+  poster(group, b.x + 7.18, floor + 2.1, b.z - 5.5, 1.35, 1.8, 0x173548, 0xffb751, Math.PI / 2);
+  poster(group, b.x + 7.18, floor + 2.1, b.z - 3.6, 1.35, 1.8, 0x463334, 0x73b9ef, Math.PI / 2);
+  makeFluorescent(group, b.x - 4.5, floor + 4.0, b.z + 5.5);
+  makeFluorescent(group, b.x + 4.7, floor + 4.0, b.z + 5.5);
+  makeFluorescent(group, b.x + 4.5, floor + 4.0, b.z - 2.8, COLORS.neonCool);
+}
+function addWorkshopLights(scene, b, floor) {
+  const key = new THREE.PointLight(0xffe1b3, 14, 18, 2);
+  key.position.set(b.x - 4.5, floor + 3.4, b.z + 5.4);
+  key.castShadow = false;
+  const fill = new THREE.PointLight(0xc6efff, 8, 15, 2);
+  fill.position.set(b.x + 4.6, floor + 3.2, b.z - 2.7);
+  fill.castShadow = false;
+  scene.add(key, fill);
+  return [key, fill];
 }
 function collider(list, x, z, w, d, h, id, minY = 0) {
   const c = { minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2, h, minY, id };
@@ -99,13 +213,15 @@ export class VesperDistrict {
     const height = 4.1;
     const color = isWorkshop ? COLORS.workshop : COLORS.bar;
     const wall = (x, z, w, d, colorOverride = color) => {
-      cube(g, x, floor + height / 2, z, w, height, d, colorOverride);
+      if (isWorkshop) workshopBox(g, x, floor + height / 2, z, w, height, d, 'plaster');
+      else cube(g, x, floor + height / 2, z, w, height, d, colorOverride);
       collider(this.colliders, x, z, w, d, floor + height, `${b.id}:wall`);
     };
-    cube(g, b.x, floor - 0.08, b.z, b.w, 0.16, b.d, COLORS.floor);
-    wall(left + 0.15, b.z, 0.3, b.d);
-    wall(right - 0.15, b.z, 0.3, b.d);
-    wall(b.x, back - 0.15, b.w, 0.3);
+    if (isWorkshop) workshopBox(g, b.x, floor - 0.08, b.z, b.w, 0.16, b.d, 'concrete', false);
+    else cube(g, b.x, floor - 0.08, b.z, b.w, 0.16, b.d, COLORS.floor);
+    wall(left + 0.15, b.z, 0.3, b.d, isWorkshop ? COLORS.plaster : color);
+    wall(right - 0.15, b.z, 0.3, b.d, isWorkshop ? COLORS.plaster : color);
+    wall(b.x, back - 0.15, b.w, 0.3, isWorkshop ? COLORS.plaster : color);
     const entryX = b.x - 3;
     const gap = 2.6;
     const gapLeft = entryX - gap / 2;
@@ -113,11 +229,13 @@ export class VesperDistrict {
     wall((left + gapLeft) / 2, front + 0.15, gapLeft - left, 0.3);
     wall((gapRight + right) / 2, front + 0.15, right - gapRight, 0.3);
     // Vão da porta: a parte superior é fixa e a folha abre em pivô próprio.
-    cube(g, entryX, floor + 3.35, front + 0.15, gap, 1.5, 0.3, COLORS.trim);
+    if (isWorkshop) workshopBox(g, entryX, floor + 3.35, front + 0.15, gap, 1.5, 0.3, 'plaster');
+    else cube(g, entryX, floor + 3.35, front + 0.15, gap, 1.5, 0.3, COLORS.trim);
     const doorRoot = new THREE.Group();
     doorRoot.position.set(gapLeft, floor + 1.22, front + 0.14);
     g.add(doorRoot);
-    cube(doorRoot, (gap - 0.12) / 2, 0, 0, gap - 0.12, 2.42, 0.12, COLORS.wood);
+    if (isWorkshop) workshopBox(doorRoot, (gap - 0.12) / 2, 0, 0, gap - 0.12, 2.42, 0.12, 'wood');
+    else cube(doorRoot, (gap - 0.12) / 2, 0, 0, gap - 0.12, 2.42, 0.12, COLORS.wood);
     cube(doorRoot, gap - 0.4, -0.12, -0.09, 0.11, 0.11, 0.15, 0xd7b37f);
     const doorCollider = collider(this.colliders, entryX, front + 0.14, gap, 0.22, floor + 2.5, `${b.id}:door`);
     this.doors.push({ id: `${b.id}:door`, buildingId: b.id, x: entryX, z: front, root: doorRoot, collider: doorCollider, target: 0, open: 0 });
@@ -129,12 +247,22 @@ export class VesperDistrict {
     cube(g, b.x - 7, floor + 1.0, b.z + 4, 1.5, 1.9, 6, isWorkshop ? COLORS.steel : COLORS.wood);
     collider(this.colliders, b.x - 7, b.z + 4, 1.5, 6, floor + 2, `${b.id}:shelf`);
     for (let i = 0; i < 3; i++) cube(g, b.x + 8, floor + 2.8, b.z - 7 + i * 4, 1.0, 0.15, 0.2, 0xe7cc9c, { emissive: 0x7e5b2f, emissiveIntensity: 0.35 });
+    if (isWorkshop) {
+      makeWorkshopVisuals(g, b, floor, left, right, front, back);
+      b.decorLights = addWorkshopLights(this.scene, b, floor);
+    }
     // Teto desativado apenas enquanto o jogador ocupa a sala; evita teto cortando câmera.
     const roof = cube(g, b.x, floor + height + 0.13, b.z, b.w + 0.45, 0.25, b.d + 0.45, 0x8b8c83);
     b.roof = roof;
     b.roomBounds = { minX: left + 0.3, maxX: right - 0.3, minZ: front + 0.3, maxZ: back - 0.3 };
     const s = sign(this.scene, title, b.x + 2, front, Math.min(12, b.w - 4), isWorkshop ? '#5b4034' : '#214a4c');
-    if (isWorkshop) this.businessSigns.push(s);
+    if (isWorkshop) {
+      cube(g, b.x + 1.9, floor + 3.55, front + 0.08, Math.min(12.6, b.w - 3.2), 0.18, 0.18, 0x2b2b2e);
+      cube(g, b.x + 1.9, floor + 2.55, front + 0.08, Math.min(12.6, b.w - 3.2), 0.18, 0.18, 0x2b2b2e);
+      cube(g, entryX + 3.95, floor + 1.95, front + 0.07, 2.4, 2.0, 0.08, COLORS.glass, { transparent: true, opacity: 0.42, depthWrite: false });
+      cube(g, entryX + 6.6, floor + 1.95, front + 0.07, 2.4, 2.0, 0.08, COLORS.glass, { transparent: true, opacity: 0.42, depthWrite: false });
+      this.businessSigns.push(s);
+    }
     // NPCs reais com animação idle e prompt de conversa.
     const actor = new Character(isWorkshop ? 'casual_woman' : 'business_man');
     actor.group.position.set(b.x + 4.3, floor, b.z + 1);
@@ -224,6 +352,11 @@ export class VesperDistrict {
 
   setRenovated(renovated) {
     for (const { mesh } of this.businessSigns) mesh.material.color.set(renovated ? '#ffe2a6' : '#ffffff');
+    for (const b of this.buildings) {
+      if (b.id !== 'sa-oficina-valenca' || !b.decorLights) continue;
+      b.decorLights[0].intensity = renovated ? 18 : 14;
+      b.decorLights[1].intensity = renovated ? 11 : 8;
+    }
   }
 
   getManifest() {

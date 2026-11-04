@@ -61,3 +61,7 @@ Créditos e licenças dos assets externos: [CREDITS.md](CREDITS.md). Visuais e h
 - Teste de rotas: `node --test src/asset-paths.test.js`, incluído em `npm test`.
 
 Os erros 404 devem ser avaliados pelo **URL completo** na aba Network; o ícone ausente não impede sozinho o jogo de iniciar.
+
+## Texturas da Oficina — v0.3.3
+
+A Oficina Valença recebeu materiais de concreto PBR, paredes envelhecidas, madeira, chapa de aço, metal pintado e borracha. Os mapas leves e o plano de QA estão em [docs/OFICINA_TEXTURAS_0.3.3.md](docs/OFICINA_TEXTURAS_0.3.3.md).
